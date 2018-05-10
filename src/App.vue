@@ -9,7 +9,31 @@
     		{{item.name}}
     	</li>
     </ul>
-    <!--<hello></hello>-->
+    <!-- <hello></hello> -->
+    <div :class="{'es-grid': true}">
+        <input type="text" v-model="searchQuery" name="searchKey" :class="{inputClass: true}">
+        <my-grid
+            :search-query="searchQuery"
+            :titles="titles"
+            :table-datas="tableDatas"
+            ></my-grid>
+    </div>
+    <table class="table">
+      <thead>
+        <tr >
+          <th v-for="listTitle in listTitles">{{ listTitle }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in addressList">
+          <!-- <td v-for="node in item">{{ node }}</td> -->
+          <td>{{ item.productName }}</td>
+          <td>{{ item.productPrice }}</td>
+          <td>{{ item.productQuantity }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- <grid></grid> -->
   </div>
 </template>
 
@@ -18,7 +42,8 @@
 import Storage from './localstorage'
 //引入 Hello.vue 组件，命名为 Hello
 import Hello from './components/Hello'
-//ES6语法，相当于 
+import myGrid from './components/Grid'
+//ES6语法，相当于
 //new Vue({})
 export default {
   name: 'app',//name属性作为组件名称，全局 ID 自动作为组件的 name
@@ -26,12 +51,29 @@ export default {
   	return {
   		msg:'Type name and mark who is student',
   		items:Storage.fetch(),//获取存在 storage 里面的键值对
-  		itemNew:''
+  		itemNew:'',
+      searchQuery: '',
+      titles: ['name', 'age'],
+      tableDatas: [{
+          name: 'pwf',
+          age: 12
+      }, {
+          name: 'hyy',
+          age: 23
+      }],
+      addressList: [],
+      listTitles: ['名称', '价格', '数量']
   	}
+  },
+  mounted:function(){
+      this.$nextTick(function(){
+          this.getAddressList();
+      })
   },
   components:{
   	//在#app元素内，注册组件
-  	//Hello
+    // Hello,
+  	myGrid
   },
   methods:{
   	turnRed: function (item) {
@@ -45,7 +87,12 @@ export default {
   		});
   		//清空文本栏
   		this.itemNew = null;
-  	}
+  	},
+    getAddressList:function(){
+        this.$http.get('static/cart.json',{'id':123}).then(res => {
+          this.addressList = res.data.result.list;
+        });
+    }
   },
   watch:{
   	items:{

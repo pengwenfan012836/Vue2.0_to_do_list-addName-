@@ -21,6 +21,13 @@
 </template>
 
 <script>
+class Parent {
+  constructor(name) {
+    this.name = name;
+  }
+}
+var son = new Parent('xioming');
+console.log(son);
 export default {
   name: 'hello',
   data () {
